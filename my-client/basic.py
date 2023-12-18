@@ -2,7 +2,7 @@ import requests
 
 endpoint = "http://localhost:8000/api/"
 
-r = requests.get(endpoint,params={"abc" : 123}, json={"query": "Hello World"})
+r = requests.post(endpoint,json={"title": "Hello World"})
 
 # print(r.text)
 print(r.json())
