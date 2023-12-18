@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, mixins, authentication, permissions
 from .models import Product
 from .serializers import ProductSerializer
 from django.shortcuts import get_object_or_404
@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
@@ -82,3 +84,32 @@ product_destroy_view = ProductDeleteView.as_view()
 #             print(instance)
 #             return Response(serializer.data)
 #         return Response({"Invalid": "Data style Not good"}, status=400)
+
+#
+# +++++++++++++++++++++++++++++++++++++++++++++
+# class ProductMixinView(
+#     generics.GenericAPIView,
+#     mixins.ListModelMixin,
+#     mixins.RetrieveModelMixin,
+#     mixins.CreateModelMixin):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         pk = kwargs.get('pk')
+#         if pk is not None:
+#             return self.retrieve(request, *args, **kwargs)
+#         return self.list(request, *args, **kwargs)
+#
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+#
+#     def perform_create(self, serializer):
+#         title = serializer.validated_data.get('title')
+#         content = serializer.validated_data.get('content') or None
+#         if content is None:
+#             content = title
+#         serializer.save(content=content)
+#
+#
+# product_mixin_view = ProductMixinView.as_view()
